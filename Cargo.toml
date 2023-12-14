@@ -1,8 +1,20 @@
 [package]
 name = "slog-error-chain"
+description = "slogging error cause chains"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+license = "MPL-2.0"
 
 [dependencies]
+slog = "2.7"
+
+# requires `nested-values` feature
+serde = { version = "1.0", optional = true }
+erased-serde = { version = "0.3", optional = true }
+
+[features]
+nested-values = ["slog/nested-values", "serde", "erased-serde"]
+
+[dev-dependencies]
+thiserror = "1.0"
+serde_json = "1.0"
