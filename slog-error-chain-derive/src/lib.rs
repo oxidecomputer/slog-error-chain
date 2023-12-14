@@ -75,7 +75,7 @@ pub fn derive_slog_array_error(
         }
 
         impl #impl_generics ::slog::SerdeValue for #name #ty_generics #where_clause {
-            fn as_serde(&self) -> &dyn ::erased_serde::Serialize {
+            fn as_serde(&self) -> &dyn ::slog_error_chain::erased_serde::Serialize {
                 self
             }
 
@@ -85,8 +85,8 @@ pub fn derive_slog_array_error(
 
             fn serialize_fallback(
                 &self,
-                key: slog::Key,
-                serializer: &mut dyn slog::Serializer,
+                key: ::slog::Key,
+                serializer: &mut dyn ::slog::Serializer,
             ) -> slog::Result<()> {
                 ::slog_error_chain::ArrayErrorChain::new(self)
                     .serialize_fallback(key, serializer)

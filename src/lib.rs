@@ -9,6 +9,8 @@ use std::error::Error;
 use std::fmt;
 
 #[cfg(feature = "nested-values")]
+pub use erased_serde;
+#[cfg(feature = "nested-values")]
 mod nested_values;
 #[cfg(feature = "nested-values")]
 pub use nested_values::*;
