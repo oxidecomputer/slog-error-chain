@@ -13,6 +13,9 @@ mod nested_values;
 #[cfg(feature = "nested-values")]
 pub use nested_values::*;
 
+#[cfg(feature = "derive")]
+pub use slog_error_chain_derive::{SlogArrayError, SlogInlineError};
+
 /// TODO
 pub struct InlineErrorChain<'a>(&'a dyn Error);
 
