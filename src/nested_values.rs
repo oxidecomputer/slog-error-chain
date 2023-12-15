@@ -9,6 +9,7 @@
 use crate::InlineErrorChain;
 use serde::ser::SerializeSeq;
 use serde::Serialize;
+use slog::KV;
 use slog::SerdeValue;
 use slog::Value;
 use std::error::Error;
@@ -62,6 +63,17 @@ impl Serialize for OwnedErrorChain {
             seq.serialize_element(s.as_str())?;
         }
         seq.end()
+    }
+}
+
+impl KV for OwnedErrorChain {
+    #[allow(clippy::useless_conversion)] // see InlineErrorChain's KV impl
+    fn serialize(
+        &self,
+        _record: &slog::Record,
+        serializer: &mut dyn slog::Serializer,
+    ) -> slog::Result {
+        serializer.emit_serde("error".into(), self)
     }
 }
 
@@ -129,6 +141,17 @@ impl Serialize for ArrayErrorChain<'_> {
             source = cause.source();
         }
         seq.end()
+    }
+}
+
+impl KV for ArrayErrorChain<'_> {
+    #[allow(clippy::useless_conversion)] // see InlineErrorChain's KV impl
+    fn serialize(
+        &self,
+        _record: &slog::Record,
+        serializer: &mut dyn slog::Serializer,
+    ) -> slog::Result {
+        serializer.emit_serde("error".into(), self)
     }
 }
 

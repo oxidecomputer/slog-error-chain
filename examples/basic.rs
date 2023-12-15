@@ -32,7 +32,11 @@ fn main() {
 
     info!(log, "logging error with Display impl"; "err" => %err);
     info!(
-        log, "logging error with InlineErrorChain";
-        "err" => InlineErrorChain::new(&err),
+        log, "logging error with InlineErrorChain, explicit key";
+        "my-key" => InlineErrorChain::new(&err),
+    );
+    info!(
+        log, "logging error with InlineErrorChain, implicit key";
+        InlineErrorChain::new(&err),
     );
 }

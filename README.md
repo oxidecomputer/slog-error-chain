@@ -3,8 +3,6 @@
 `slog-error-chain` provides `Display` and `slog::Value` adapters to report
 the full chain of error causes from `std::error::Error`s.
 
-### Background
-
 This crate was born out of a use of `thiserror` to derive `std::error::Error`
 implementations on error enums, although it does not depend on `thiserror` and
 will work with any `Error`s. Error enums often wrap other error sources, such
@@ -39,7 +37,20 @@ full error chain:
 an I/O error occurred trying to open /some/path: file not found
 ```
 
-See the [`basic`](./examples/basic.rs) example.
+`InlineErrorChain` also implements `slog::Value` and `slog::KV`, allowing it to
+be logged directly:
+
+```rust
+// explicit key
+info!(
+    log, "something happened"; "my-key" => InlineErrorChain::new(&err),
+);
+
+// key omitted; will log with the key "error"
+info!(
+    log, "something happened"; InlineErrorChain::new(&err),
+);
+```
 
 ### Aside: Embedding Source Error Strings
 
@@ -98,5 +109,36 @@ However, implementing `slog::SerdeValue` also requires implementing
 `serde::Serialize`, so this proc macro cannot be used with error types that
 already implement `serde::Serialize`.
 
-See the [`derive`](./examples/derive.rs) example, which demonstrates all of the
-above features.
+### Examples
+
+[`basic`](./examples/basic.rs) demonstrates raw `InlineErrorChain` usage:
+
+```console
+% cargo run --example basic
+Dec 15 20:34:03.682 INFO logging error with Display impl, err: an I/O error occurred trying to open /some/path
+Dec 15 20:34:03.682 INFO logging error with InlineErrorChain, explicit key, my-key: an I/O error occurred trying to open /some/path: custom I/O error
+Dec 15 20:34:03.682 INFO logging error with InlineErrorChain, implicit key, error: an I/O error occurred trying to open /some/path: custom I/O error
+```
+
+[`derive`](./examples/derive.rs) demonstrates `#[derive(SlogInlineError)]`:
+
+```console
+% cargo run --example derive --features derive
+Dec 15 20:36:13.133 INFO slog-term inline error formatting, explicit key, my-key: outer error: inner error: custom I/O error
+Dec 15 20:36:13.133 INFO slog-term inline error formatting, implicit key, error: outer error: inner error: custom I/O error
+```
+
+[`nested-values`](./examples/nested-values.rs) demonstrates the `nested-values`
+feature (along with `#[derive(SlogArrayError)]`:
+
+```console
+% cargo run --example nested-values --features derive,nested-values
+Dec 15 20:34:25.329 INFO slog-term inline error formatting, explicit key, my-key: outer error: inner error: custom I/O error
+Dec 15 20:34:25.329 INFO slog-term inline error formatting, implicit key, error: outer error: inner error: custom I/O error
+Dec 15 20:34:25.329 INFO slog-term structured error formatting, explicit key, my-key: outer error: inner error: custom I/O error
+Dec 15 20:34:25.329 INFO slog-term structured error formatting, implicit key, error: outer error: inner error: custom I/O error
+{"msg":"slog-json inline error formatting, explicit key","level":"INFO","ts":"2023-12-15T20:34:25.329726569Z","my-key":"outer error: inner error: custom I/O error"}
+{"msg":"slog-json inline error formatting, implicit key","level":"INFO","ts":"2023-12-15T20:34:25.329768879Z","error":"outer error: inner error: custom I/O error"}
+{"msg":"slog-json structured error formatting, explicit key","level":"INFO","ts":"2023-12-15T20:34:25.329805499Z","my-key":["outer error","inner error","custom I/O error"]}
+{"msg":"slog-json structured error formatting, implicit key","level":"INFO","ts":"2023-12-15T20:34:25.329853429Z","error":["outer error","inner error","custom I/O error"]}
+```

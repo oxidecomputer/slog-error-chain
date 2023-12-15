@@ -30,6 +30,18 @@ pub fn derive_slog_inline_error(
         input.generics.split_for_impl();
 
     let expanded = quote! {
+        impl #impl_generics ::slog::KV for #name #ty_generics #where_clause {
+            fn serialize(
+                &self,
+                record: &::slog::Record,
+                serializer: &mut dyn ::slog::Serializer,
+            ) -> ::slog::Result {
+                ::slog_error_chain::InlineErrorChain::new(self).serialize(
+                    record,
+                    serializer,
+                )
+            }
+        }
         impl #impl_generics ::slog::Value for #name #ty_generics #where_clause {
             fn serialize(
                 &self,
@@ -63,6 +75,19 @@ pub fn derive_slog_array_error(
         input.generics.split_for_impl();
 
     let expanded = quote! {
+        impl #impl_generics ::slog::KV for #name #ty_generics #where_clause {
+            fn serialize(
+                &self,
+                record: &::slog::Record,
+                serializer: &mut dyn ::slog::Serializer,
+            ) -> ::slog::Result {
+                ::slog_error_chain::ArrayErrorChain::new(self).serialize(
+                    record,
+                    serializer,
+                )
+            }
+        }
+
         impl #impl_generics ::slog::Value for #name #ty_generics #where_clause {
             fn serialize(
                 &self,
