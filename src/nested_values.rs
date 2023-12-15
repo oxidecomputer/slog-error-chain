@@ -2,7 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! TODO
+//! [`ArrayErrorChain`] supports logging error chains as arrays of strings, one
+//! element per cause, via [`slog::SerdeValue`] for loggers that support
+//! structured values (aka `nested-values`), such as `slog-json`.
 
 use crate::InlineErrorChain;
 use serde::ser::SerializeSeq;
@@ -12,7 +14,14 @@ use slog::Value;
 use std::error::Error;
 use std::fmt;
 
-/// TODO
+/// An owned, `'static` version of an [`ArrayErrorChain`].
+///
+/// `OwnedErrorChain` is relatively expensive to construct, as it always
+/// allocates a `String` for the initial error and additionally allocates a
+/// `Vec<String>` for any causes in the error's chain. This type exists
+/// primarily to allow [`ArrayErrorChain`] to implement [`slog::SerdeValue`],
+/// which requires the ability to convert to an owned value (e.g., to offload to
+/// another thread for serialization, such as when `slog-async` is used).
 #[derive(Debug, Clone)]
 pub struct OwnedErrorChain {
     first: String,
@@ -20,7 +29,7 @@ pub struct OwnedErrorChain {
 }
 
 impl OwnedErrorChain {
-    /// TODO
+    /// Construct a new `OwnedErrorChain` from an error.
     pub fn new(err: &dyn Error) -> Self {
         let mut causes = vec![];
         let mut source = err.source();
@@ -85,11 +94,17 @@ impl SerdeValue for OwnedErrorChain {
     }
 }
 
-/// TODO
+/// Adapter for [`Error`]s that provides a [`slog::SerdeValue`] implementation
+/// that serializes the chain of errors as an array of strings.
+///
+/// `ArrayErrorChain`'s `Display` implementation and its fallback `SerdeValue`
+/// format when using a logger that does not support nested values matches the
+/// behavior of [`InlineErrorChain`]: the chain of errors is printed as a single
+/// string with the causes separated by `: `.
 pub struct ArrayErrorChain<'a>(&'a dyn Error);
 
 impl<'a> ArrayErrorChain<'a> {
-    /// TODO
+    /// Construct a new `ArrayErrorChain` from an error.
     pub fn new(err: &'a dyn Error) -> Self {
         Self(err)
     }

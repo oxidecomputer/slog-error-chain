@@ -2,7 +2,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! TODO
+//! Provides derive macros to attach `slog::Value` implementations to errors.
+//!
+//! The `SlogInlineError` macro provides a `slog::Value` implementation that
+//! will log errors using `slog_error_chain::InlineErrorChain`; i.e., as a
+//! single string with each cause in the error chain separated by colons.
+//!
+//! If the `nested-values` feature is enabled, the `SlogArrayError` macro
+//! provides implementations for `slog::Value`, `slog::SerdeValue`, and
+//! `serde::Serialize` that will log errors as an array of strings (one element
+//! for each cause), if the logger in use itself supports nested values via
+//! `serde`.
 
 use quote::quote;
 use syn::parse_macro_input;

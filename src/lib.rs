@@ -2,7 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! TODO
+//! `slog-error-chain` provides `Display` and `slog::Value` adapters to report
+//! the full chain of error causes from `std::error::Error`s.
 
 use slog::Value;
 use std::error::Error;
@@ -18,11 +19,13 @@ pub use nested_values::*;
 #[cfg(feature = "derive")]
 pub use slog_error_chain_derive::{SlogArrayError, SlogInlineError};
 
-/// TODO
+/// Adapter for [`Error`]s that provides both [`std::fmt::Display`] and
+/// [`slog::Value`] implementations that print the full chain of error sources,
+/// separated by `: `.
 pub struct InlineErrorChain<'a>(&'a dyn Error);
 
 impl <'a> InlineErrorChain<'a> {
-    /// TODO
+    /// Construct a new `InlineErrorChain` from an error.
     pub fn new(err: &'a dyn Error) -> Self {
         Self(err)
     }
