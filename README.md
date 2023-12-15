@@ -52,6 +52,32 @@ info!(
 );
 ```
 
+With the `derive` feature enabled, error types can `#[derive(SlogInlineError)]`
+to gain `slog::Value` and `slog::KV` implementations on themselves, allowing
+them to be logged directly:
+
+```rust
+use slog_error_chain::SlogInlineError;
+
+#[derive(Debug, thiserror::Error, SlogInlineError)]
+enum MyError {
+    #[error("an I/O error occurred trying to open {}", .path.display())]
+    OpeningFile {
+        path: PathBuf,
+        #[source]
+        err: io::Error,
+    },
+}
+
+let err = MyError::OpeningFile { .. };
+
+// explicit key, logs the full chain
+info!(log, "something happened"; "my-key" => &err);
+
+// key omitted; will log the full chain with the key "error"
+info!(log, "something happened"; &err);
+```
+
 ### Aside: Embedding Source Error Strings
 
 An easy solution to reach for when encountering the "printing an error doesn't
