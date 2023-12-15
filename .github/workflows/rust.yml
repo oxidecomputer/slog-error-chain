@@ -1,0 +1,53 @@
+#
+# Configuration for GitHub-based CI, based on the stock GitHub Rust config.
+#
+name: Rust
+
+on: [ push, pull_request ]
+
+jobs:
+  check-style:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - name: Report cargo version
+        run: cargo --version
+      - name: Report rustfmt version
+        run: cargo fmt -- --version
+      - name: Check style
+        run: cargo fmt -- --check
+
+  clippy-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - name: Report cargo version
+        run: cargo --version
+      - name: Report Clippy version
+        run: cargo clippy -- --version
+      - name: Run Clippy Lints
+        run: |
+          cargo clippy -- -D warnings
+          cargo clippy --features derive -- -D warnings
+          cargo clippy --features nested-values -- -D warnings
+          cargo clippy --features derive,nested-values -- -D warnings
+
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - name: Report cargo version
+        run: cargo --version
+      - name: Report rustc version
+        run: rustc --version
+      - name: Build
+        run: cargo build --all-targets --verbose
+      - name: Run tests
+        run: |
+          cargo test --verbose
+          cargo test --features derive --verbose
+          cargo test --features nested-values --verbose
+          cargo test --features derive,nested-values --verbose
