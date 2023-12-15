@@ -18,6 +18,8 @@ use quote::quote;
 use syn::parse_macro_input;
 use syn::DeriveInput;
 
+/// Derives an implementation of `slog::Value` that delegates to
+/// `slog_error_chain::InlineErrorChain`.
 #[proc_macro_derive(SlogInlineError)]
 pub fn derive_slog_inline_error(
     input: proc_macro::TokenStream,
@@ -47,6 +49,9 @@ pub fn derive_slog_inline_error(
     proc_macro::TokenStream::from(expanded)
 }
 
+/// Derives an implementation of `slog::SerdeValue` (and `slog::Value` and
+/// `serde::Serialize`, which are required to implement `slog::SerdeValue`) that
+/// delegates to `slog_error_chain::ArrayErrorChain`.
 #[cfg(feature = "nested-values")]
 #[proc_macro_derive(SlogArrayError)]
 pub fn derive_slog_array_error(
