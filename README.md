@@ -1,7 +1,9 @@
 ## Overview
 
-`slog-error-chain` provides `Display` and `slog::Value` adapters to report
-the full chain of error causes from `std::error::Error`s.
+`slog-error-chain` provides `std::fmt::Display`, `slog::KV`, and `slog::Value`
+adapters to report the full chain of error causes from `std::error::Error`s, and
+a proc macro to derive `slog::KV` and `slog::Value` implementations for error
+types which will log the full chain of error causes.
 
 This crate was born out of a use of `thiserror` to derive `std::error::Error`
 implementations on error enums, although it does not depend on `thiserror` and
@@ -71,10 +73,10 @@ enum MyError {
 
 let err = MyError::OpeningFile { .. };
 
-// explicit key, logs the full chain
+// explicit key; logs the full chain
 info!(log, "something happened"; "my-key" => &err);
 
-// key omitted; will log the full chain with the key "error"
+// implicit key; logs the full chain with the key "error"
 info!(log, "something happened"; &err);
 ```
 
@@ -96,7 +98,7 @@ enum MyError {
 }
 ```
 
-Doing so will make the `Display` implementation of `MyError` _look_ correct:
+Doing so will make the `Display` implementation of `MyError` _look_ reasonable:
 
 ```text
 # println!("{my_error}")
