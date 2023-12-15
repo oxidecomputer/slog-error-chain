@@ -32,11 +32,11 @@ fn main() {
     )));
 
     info!(
-        log, "slog-term inline error formatting, explicit key";
+        log, "derived slog::Value with explicit key";
         "my-key" => &err,
     );
     info!(
-        log, "slog-term inline error formatting, implicit key";
+        log, "derived slog::KV using implicit error key";
         &err,
     );
 }

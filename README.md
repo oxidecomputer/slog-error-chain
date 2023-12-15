@@ -121,19 +121,19 @@ itself.
 `slog-error-chain` gates additional functionality behind two cargo features:
 
 * `derive`: Provides the `#[derive(SlogInlineError)]` proc macro that can be
-  applied to error types; it provides an implementation of `slog::Value` that
-  delegates to `InlineErrorChain`.
+  applied to error types; it provides implementations of `slog::Value` and
+  `slog::KV` that delegate to `InlineErrorChain`.
 * `nested-values`: Provides the `ArrayErrorChain` type, which is similar to
   `InlineErrorChain` except that it also implements `slog::SerdeValue`, and for
   loggers that support nested values, the error will be logged as an array of
   strings (one element per error in the chain).
 
 If both `derive` and `nested-values` are enabled, the
-`#[derive(SlogArrayError)]` proc macro is provided. This gives an implementation
-of `slog::SerdeValue` for the error type that delegates to `ArrayErrorChain`.
-However, implementing `slog::SerdeValue` also requires implementing
-`serde::Serialize`, so this proc macro cannot be used with error types that
-already implement `serde::Serialize`.
+`#[derive(SlogArrayError)]` proc macro is provided. This gives implementations
+of `slog::Value`, `slog::SerdeValue`, and `slog::KV` for the error type that
+delegates to `ArrayErrorChain`. However, implementing `slog::SerdeValue` also
+requires implementing `serde::Serialize`, so this proc macro cannot be used with
+error types that already implement `serde::Serialize`.
 
 ### Examples
 
@@ -150,8 +150,8 @@ Dec 15 20:34:03.682 INFO logging error with InlineErrorChain, implicit key, erro
 
 ```console
 % cargo run --example derive --features derive
-Dec 15 20:36:13.133 INFO slog-term inline error formatting, explicit key, my-key: outer error: inner error: custom I/O error
-Dec 15 20:36:13.133 INFO slog-term inline error formatting, implicit key, error: outer error: inner error: custom I/O error
+Dec 15 20:44:45.976 INFO derived slog::Value with explicit key, my-key: outer error: inner error: custom I/O error
+Dec 15 20:44:45.976 INFO derived slog::KV using implicit error key, error: outer error: inner error: custom I/O error
 ```
 
 [`nested-values`](./examples/nested-values.rs) demonstrates the `nested-values`
