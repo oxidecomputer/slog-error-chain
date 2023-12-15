@@ -26,9 +26,10 @@ fn main() {
     let log =
         Logger::root(slog_term::FullFormat::new(plain).build().fuse(), o!());
 
-    let err = OuterError::Outer(InnerError::Inner(
-        io::Error::new(io::ErrorKind::Other, "custom I/O error"),
-    ));
+    let err = OuterError::Outer(InnerError::Inner(io::Error::new(
+        io::ErrorKind::Other,
+        "custom I/O error",
+    )));
 
     info!(
         log, "slog-term inline error formatting, explicit key";

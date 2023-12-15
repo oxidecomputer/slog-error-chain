@@ -9,9 +9,9 @@
 use crate::InlineErrorChain;
 use serde::ser::SerializeSeq;
 use serde::Serialize;
-use slog::KV;
 use slog::SerdeValue;
 use slog::Value;
+use slog::KV;
 use std::error::Error;
 use std::fmt;
 
