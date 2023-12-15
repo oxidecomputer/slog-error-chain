@@ -17,7 +17,9 @@ mod nested_values;
 pub use nested_values::*;
 
 #[cfg(feature = "derive")]
-pub use slog_error_chain_derive::{SlogArrayError, SlogInlineError};
+pub use slog_error_chain_derive::SlogInlineError;
+#[cfg(all(feature = "derive", feature = "nested-values"))]
+pub use slog_error_chain_derive::SlogArrayError;
 
 /// Adapter for [`Error`]s that provides both [`std::fmt::Display`] and
 /// [`slog::Value`] implementations that print the full chain of error sources,
