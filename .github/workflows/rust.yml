@@ -26,10 +26,10 @@ jobs:
       - name: Report Clippy version
         run: cargo clippy -- --version
       - name: Run Clippy Lints
-        run: cargo clippy -- -D warnings
-        run: cargo clippy --features derive -- -D warnings
-        run: cargo clippy --features nested-values -- -D warnings
-        run: cargo clippy --features derive,nested-values -- -D warnings
+      - run: cargo clippy -- -D warnings
+      - run: cargo clippy --features derive -- -D warnings
+      - run: cargo clippy --features nested-values -- -D warnings
+      - run: cargo clippy --features derive,nested-values -- -D warnings
 
   build-and-test:
     runs-on: ${{ matrix.os }}
@@ -45,7 +45,7 @@ jobs:
       - name: Build
         run: cargo build --all-targets --verbose
       - name: Run tests
-        run: cargo test --verbose
-        run: cargo test --features derive --verbose
-        run: cargo test --features nested-values --verbose
-        run: cargo test --features derive,nested-values --verbose
+      - run: cargo test --verbose
+      - run: cargo test --features derive --verbose
+      - run: cargo test --features nested-values --verbose
+      - run: cargo test --features derive,nested-values --verbose
