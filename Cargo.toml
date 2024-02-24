@@ -11,7 +11,7 @@ slog = "2.7"
 
 # requires `nested-values` feature
 serde = { version = "1.0", optional = true }
-erased-serde = { version = "0.3", optional = true }
+erased-serde = { version = "0.4", optional = true }
 
 # requires `derive` feature
 slog-error-chain-derive = { path = "slog-error-chain-derive", optional = true }
