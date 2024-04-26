@@ -10,7 +10,7 @@ slog = "2.7"
 #slog = { version = "2.7", features = ["dynamic-keys"]}
 
 # requires `nested-values` feature
-serde = { version = "1.0", optional = true }
+serde = { version = "1.0.198", optional = true }
 erased-serde = { version = "0.3", optional = true }
 
 # requires `derive` feature
