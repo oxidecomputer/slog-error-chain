@@ -6,6 +6,7 @@ use slog::info;
 use slog::o;
 use slog::Drain;
 use slog::Logger;
+use slog_error_chain::AsInlineErrorChain;
 use slog_error_chain::InlineErrorChain;
 use std::io;
 use std::path::PathBuf;
@@ -37,6 +38,6 @@ fn main() {
     );
     info!(
         log, "logging error with InlineErrorChain, implicit key";
-        InlineErrorChain::new(&err),
+        err.as_inline_error_chain(),
     );
 }
