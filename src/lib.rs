@@ -74,6 +74,19 @@ impl fmt::Display for InlineErrorChain<'_> {
     }
 }
 
+/// A trait for conveniently constructing [`InlineErrorChain`]s from [`Error`]s.
+pub trait AsInlineErrorChain: Error {
+    /// A convenient wrapper around [`InlineErrorChain::new`].
+    fn as_inline_error_chain<'a>(&'a self) -> InlineErrorChain<'a>;
+}
+
+/// Implementation for all [`Error`] types
+impl<E: Error> AsInlineErrorChain for E {
+    fn as_inline_error_chain<'a>(&'a self) -> InlineErrorChain<'a> {
+        InlineErrorChain::new(self)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::io;
@@ -106,6 +119,12 @@ mod tests {
         let err = ErrorB::B(err);
         assert_eq!(
             InlineErrorChain::new(&err).to_string(),
+            "error b: error a: test error"
+        );
+
+        // Confirm AsInlineErrorChain works as intended
+        assert_eq!(
+            err.as_inline_error_chain().to_string(),
             "error b: error a: test error"
         );
     }

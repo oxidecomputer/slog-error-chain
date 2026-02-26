@@ -184,6 +184,19 @@ impl SerdeValue for ArrayErrorChain<'_> {
     }
 }
 
+/// A trait for conveniently constructing [`ArrayErrorChain`]s from [`Error`]s.
+pub trait AsArrayErrorChain: Error {
+    /// A convenient wrapper around [`ArrayErrorChain::new`].
+    fn as_array_error_chain<'a>(&'a self) -> ArrayErrorChain<'a>;
+}
+
+/// Implementation for all [`Error`] types
+impl<E: Error> AsArrayErrorChain for E {
+    fn as_array_error_chain<'a>(&'a self) -> ArrayErrorChain<'a> {
+        ArrayErrorChain::new(self)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -276,6 +289,9 @@ mod tests {
         // Check `Display` and non-serde serialization
         let chain = ArrayErrorChain::new(&err);
         assert_eq!(chain.to_string(), "test error");
+
+        // Check AsArrayErrorChain implementation
+        assert_eq!(err.as_array_error_chain().to_string(), "test error");
 
         let mut out = StringSerializer::default();
         chain.serialize_fallback("unused", &mut out).unwrap();

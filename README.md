@@ -43,6 +43,8 @@ an I/O error occurred trying to open /some/path: file not found
 be logged directly:
 
 ```rust
+// Using the adapter constructor
+
 // explicit key
 info!(
     log, "something happened"; "my-key" => InlineErrorChain::new(&err),
@@ -51,6 +53,18 @@ info!(
 // key omitted; will log with the key "error"
 info!(
     log, "something happened"; InlineErrorChain::new(&err),
+);
+
+// Using the blanket method implementation
+
+// explicit key
+info!(
+    log, "something happened"; "my-key" => err.as_inline_error_chain(),
+);
+
+// key omitted; will log with the key "error"
+info!(
+    log, "something happened"; err.as_inline_error_chain(),
 );
 ```
 
